@@ -136,14 +136,31 @@ public class AtlassianControllerTest
         @Test
         public void testCreateIssue() throws Exception {
 
-        	String j =  "{\"fields\":{\"project\":{\"key\":\"MFP\"},"
-        			+ "\"summary\":\"REST ye merry gentleman REST. "
-        			+ "And Finally I solved which i tried again "
-        			+ "and again hnnghj\",\"description\":"
-        			+ "{\"type\":\"doc\",\"version\":1,\"content\""
-        			+ ":[{\"type\":\"paragraph\",\"content\":[{\"type\":"
-        			+ "\"text\",\"text\":\"description\"}]}]},\"issuetype\""
-        			+ ":{\"name\":\"Bug\"}}}";
+        	String j =  "{\"fields\":{\"project\":{\"key\":\"MFP\"},\"summary\":\"hero number 1.\","
+        			+ "\"customfield_10011\":\"Eklas\",\"priority\":{\"name\":\"Medium\"},"
+        			+ "\"labels\":[\"Ford\"],\"reporter\":{\"id\":\"6051fc7c45a3bb006801ee86\"},"
+        			+ "\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\","
+        			+ "\"content\":[{\"type\":\"text\",\"text\":\"bhnhnhhgghgghhhhhnhnhnhnhnhnhnhnhnhnh\"}]}]},\"issuetype\":{\"name\":\"Epic\"}}}";
+            mockMvc.perform(post( "/response/createIssue")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(j))
+                    .andExpect(status().isCreated())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.registros_status").exists());
+//            
+//                    .andExpect(status().isOk())
+//                    .andExpect(jsonPath("$.registros_status", Matchers.is("SUCCESS")));
+//                    .andExpect(jsonPath("$.value", Matchers.is("Hello World")))
+//                    .andExpect(jsonPath("$.*", Matchers.hasSize(2)));
+       }
+        
+        @Test
+        public void testUpdateIssue() throws Exception {
+
+        	String j =  "{\"fields\":{\"project\":{\"key\":\"MFP\"},\"summary\":\"hero number 1.\","
+        			+ "\"customfield_10011\":\"Eklas\",\"priority\":{\"name\":\"Medium\"},"
+        			+ "\"labels\":[\"Ford\"],\"reporter\":{\"id\":\"6051fc7c45a3bb006801ee86\"},"
+        			+ "\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\","
+        			+ "\"content\":[{\"type\":\"text\",\"text\":\"bhnhnhhgghgghhhhhnhnhnhnhnhnhnhnhnhnh\"}]}]},\"issuetype\":{\"name\":\"Epic\"}}}";
             mockMvc.perform(post( "/response/createIssue")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(j))

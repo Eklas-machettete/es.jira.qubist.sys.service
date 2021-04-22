@@ -13,24 +13,37 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "name"
+    "type",
+    "text"
 })
 @Generated("jsonschema2pojo")
-public class Issuetype {
+public class Content__1 {
 
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("type")
+    private String type;
+    @JsonProperty("text")
+    private String text;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @JsonProperty("type")
+    public String getType() {
+        return type;
     }
 
-    @JsonProperty("name")
-    public void setName(String name) {
-        this.name = name;
+    @JsonProperty("type")
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @JsonProperty("text")
+    public String getText() {
+        return text;
+    }
+
+    @JsonProperty("text")
+    public void setText(String text) {
+        this.text = text;
     }
 
     @JsonAnyGetter

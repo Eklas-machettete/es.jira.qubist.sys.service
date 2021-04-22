@@ -275,5 +275,34 @@ public class AtlassianService {
         }
        return new ResponseEntity<Reponse>(resp, HttpStatus.OK);
    	 }
+
+
+
+
+public ResponseEntity<Reponse> updateIssue(Issue issue, String issueKey) {
+	 Reponse resp = new Reponse();
+     resp.setNombre("Updated Issue");
+     resp.setRegistros_status("SUCCESS");
+     LOGGER.info("Updating issue ");
+     
+	HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    HttpEntity<Issue> entity =new HttpEntity<Issue>(issue,headers);
+    try {
+    	LOGGER.info("pusing data into Jira");
+    restTemplate.exchange(
+    		jiraUri+"/issue/"+issueKey, HttpMethod.PUT, entity, Issue.class).getBody();
+        }
+    
+    catch(Exception e) {
+    		LOGGER.error("DATA NOT FOUND");
+        	resp.setRegistros_status("FAILED");
+        	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
+        	return new ResponseEntity<Reponse>(resp, HttpStatus.NOT_FOUND);
+    	}
+    LOGGER.info("Updated isuue successfully");
+    return new ResponseEntity<Reponse>(resp, HttpStatus.OK);
+   
+     }
  
 }

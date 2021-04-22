@@ -4,6 +4,7 @@ package com.jira.model;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,12 +17,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "type",
     "content"
 })
+@Generated("jsonschema2pojo")
 public class Content {
 
     @JsonProperty("type")
     private String type;
     @JsonProperty("content")
-    private List<Content_> content = null;
+    private List<Content__1> content = null;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -36,12 +38,12 @@ public class Content {
     }
 
     @JsonProperty("content")
-    public List<Content_> getContent() {
+    public List<Content__1> getContent() {
         return content;
     }
 
     @JsonProperty("content")
-    public void setContent(List<Content_> content) {
+    public void setContent(List<Content__1> content) {
         this.content = content;
     }
 

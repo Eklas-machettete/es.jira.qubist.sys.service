@@ -2,7 +2,9 @@
 package com.jira.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,15 +16,28 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "project",
     "summary",
+    "customfield_10011",
+    "priority",
+    "labels",
+    "reporter",
     "description",
     "issuetype"
 })
+@Generated("jsonschema2pojo")
 public class Fields {
 
     @JsonProperty("project")
     private Project project;
     @JsonProperty("summary")
     private String summary;
+    @JsonProperty("customfield_10011")
+    private String customfield10011;
+    @JsonProperty("priority")
+    private Priority priority;
+    @JsonProperty("labels")
+    private List<String> labels = null;
+    @JsonProperty("reporter")
+    private Reporter reporter;
     @JsonProperty("description")
     private Description description;
     @JsonProperty("issuetype")
@@ -48,6 +63,46 @@ public class Fields {
     @JsonProperty("summary")
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    @JsonProperty("customfield_10011")
+    public String getCustomfield10011() {
+        return customfield10011;
+    }
+
+    @JsonProperty("customfield_10011")
+    public void setCustomfield10011(String customfield10011) {
+        this.customfield10011 = customfield10011;
+    }
+
+    @JsonProperty("priority")
+    public Priority getPriority() {
+        return priority;
+    }
+
+    @JsonProperty("priority")
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    @JsonProperty("labels")
+    public List<String> getLabels() {
+        return labels;
+    }
+
+    @JsonProperty("labels")
+    public void setLabels(List<String> labels) {
+        this.labels = labels;
+    }
+
+    @JsonProperty("reporter")
+    public Reporter getReporter() {
+        return reporter;
+    }
+
+    @JsonProperty("reporter")
+    public void setReporter(Reporter reporter) {
+        this.reporter = reporter;
     }
 
     @JsonProperty("description")

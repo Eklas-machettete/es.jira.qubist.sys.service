@@ -65,6 +65,16 @@ public class AtlassianController {
     	      return  atlassianService.createIssue(issue);
 				
     	     }
+	 
+	  @PutMapping(
+	  	        value = "/updateIssue/issueKey={issueKey}",
+	  	        consumes = MediaType.APPLICATION_JSON_VALUE)
+	     public  ResponseEntity<Reponse> updateIssue(@RequestBody Issue issue, @PathVariable String issueKey) 
+	         {
+	           LOGGER.trace(jiraHost+"/updateIssue/issueKey="+issueKey+" access");
+	   	       return atlassianService.updateIssue(issue, issueKey);
+	   	   
+	  	     }
      
      @PutMapping(
  	        value = "/assignee/issueKey={issueKey}",
