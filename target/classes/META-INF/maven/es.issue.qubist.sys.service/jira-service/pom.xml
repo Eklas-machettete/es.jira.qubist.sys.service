@@ -35,6 +35,8 @@
 			<scope>test</scope>
 		</dependency>
 		
+    
+		
 	<dependency>
        <groupId>com.atlassian.jira</groupId>
        <artifactId>jira-rest-java-client-core</artifactId>

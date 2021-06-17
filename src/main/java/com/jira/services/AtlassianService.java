@@ -22,8 +22,10 @@ import com.jira.model.CommenIdtList;
 import com.jira.model.Comment;
 import com.jira.model.CustomField;
 import com.jira.model.Issue;
+import com.jira.model.ProjectModel;
 import com.jira.model.updateComment.UpdateComment;
 import com.jira.model.Reponse;
+import com.jira.model.subtask.SubTask;
 
 @Service
 public class AtlassianService {
@@ -66,7 +68,7 @@ public class AtlassianService {
    	        		LOGGER.error("DATA NOT FOUND");
    	            	resp.setRegistros_status("FAILED");
    	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
-   	            	return new ResponseEntity<Reponse>(resp, HttpStatus.NOT_FOUND);
+   	            	return new ResponseEntity<Reponse>(resp, HttpStatus.BAD_REQUEST);
    	        	}
    	        LOGGER.info("created isuue successfully");
    	        return new ResponseEntity<Reponse>(resp, HttpStatus.CREATED);
@@ -304,5 +306,68 @@ public ResponseEntity<Reponse> updateIssue(Issue issue, String issueKey) {
     return new ResponseEntity<Reponse>(resp, HttpStatus.OK);
    
      }
+
+
+
+
+public ResponseEntity<Reponse> createProject(ProjectModel projectModel)  {
+    Reponse resp = new Reponse();
+    resp.setNombre("Created Project");
+    resp.setRegistros_status("SUCCESS");
+    LOGGER.info("Creating project ");
+    
+	HttpHeaders headers = new HttpHeaders();
+   headers.setContentType(MediaType.APPLICATION_JSON);
+   HttpEntity<ProjectModel> entity =new HttpEntity<ProjectModel>(projectModel,headers);
+   try {
+   	LOGGER.info("pusing data into Jira");
+    restTemplate.exchange(
+   		jiraUri+"/project", HttpMethod.POST, entity, ProjectModel.class).getBody();
+       
+       }
+   
+   catch(Exception e) {
+   		LOGGER.error("DATA PUSHED IN JIRA FAILED");
+   		LOGGER.error("Please check if insert project key or name duplicate ");
+   		
+       	resp.setRegistros_status("FAILED");
+       	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
+       	return new ResponseEntity<Reponse>(resp, HttpStatus.BAD_REQUEST);
+   	}
+   LOGGER.info("created Project successfully");
+   return new ResponseEntity<Reponse>(resp, HttpStatus.CREATED);
+}
+
+
+
+
+public ResponseEntity<Reponse> createSubTask(SubTask subTask) {
+	  Reponse resp = new Reponse();
+	    resp.setNombre("Created Subtask");
+	    resp.setRegistros_status("SUCCESS");
+	    LOGGER.info("Creating subtask for "+subTask.getFields().getParent().getKey());
+	    
+	HttpHeaders headers = new HttpHeaders();
+	   headers.setContentType(MediaType.APPLICATION_JSON);
+	   HttpEntity<SubTask> entity =new HttpEntity<SubTask>(subTask,headers);
+	   try {
+	   	LOGGER.info("pusing data into Jira");
+	    restTemplate.exchange(
+	   		jiraUri+"/issue", HttpMethod.POST, entity, ProjectModel.class).getBody();
+	       
+	       }
+	   
+	   catch(Exception e) {
+	   		LOGGER.error("DATA PUSHED IN JIRA FAILED");
+	   		LOGGER.error("Please check if inserted project key or parent key is invalid");
+	   		
+	       	resp.setRegistros_status("FAILED");
+	       	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
+	       	return new ResponseEntity<Reponse>(resp, HttpStatus.BAD_REQUEST);
+	   	}
+	   LOGGER.info("created subtask successfully for "+subTask.getFields().getParent().getKey());
+	   return new ResponseEntity<Reponse>(resp, HttpStatus.CREATED);
+}
+
  
 }

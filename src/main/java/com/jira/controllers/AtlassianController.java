@@ -1,5 +1,8 @@
 package com.jira.controllers;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +21,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jira.model.*;
 import com.jira.model.issueResponse.IssueCommentResponse;
 import com.jira.model.issueResponse.UserComments;
+import com.jira.model.subtask.SubTask;
 import com.jira.model.updateComment.UpdateComment;
 import com.jira.services.AtlassianService;
 
@@ -57,21 +64,21 @@ public class AtlassianController {
      
 
 	 @PostMapping(
-    	        value = "/createIssue",
+    	        value = "/issue",
     	        consumes = MediaType.APPLICATION_JSON_VALUE)
      public ResponseEntity<Reponse> createIssue(@RequestBody Issue issue) 
            {
-		      LOGGER.trace(jiraHost+"createIssue access");
+		      LOGGER.trace(jiraHost+"issue access");
     	      return  atlassianService.createIssue(issue);
 				
     	     }
 	 
 	  @PutMapping(
-	  	        value = "/updateIssue/issueKey={issueKey}",
+	  	        value = "/issue/issueKey={issueKey}",
 	  	        consumes = MediaType.APPLICATION_JSON_VALUE)
 	     public  ResponseEntity<Reponse> updateIssue(@RequestBody Issue issue, @PathVariable String issueKey) 
 	         {
-	           LOGGER.trace(jiraHost+"/updateIssue/issueKey="+issueKey+" access");
+	           LOGGER.trace(jiraHost+"/issue/issueKey="+issueKey+" access");
 	   	       return atlassianService.updateIssue(issue, issueKey);
 	   	   
 	  	     }
@@ -86,21 +93,21 @@ public class AtlassianController {
  	    }
 
      @DeleteMapping(
- 	        value = "/deleteIssue/{issueKey}",
+ 	        value = "/issue/{issueKey}",
  	       produces = MediaType.APPLICATION_JSON_VALUE)
      public ResponseEntity<Reponse> deleteIssue(@PathVariable String issueKey ) 
         {
-    	 LOGGER.trace(jiraHost+"deleteIssue/issueKey="+issueKey+" access");
+    	 LOGGER.trace(jiraHost+"issue/issueKey="+issueKey+" access");
     	 return atlassianService.deleteIssue(issueKey ) ;
  	    }
      
 
     @GetMapping(
-  	        value = "/getIssue/{issueKey}",
+  	        value = "/issue",
   	        produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getIssue(@PathVariable String issueKey ) 
+    public String getIssue(@RequestParam String issueKey ) 
          {
-    	    LOGGER.trace(jiraHost+"getIssue/"+issueKey+" access");
+    	    LOGGER.trace(jiraHost+"issue/"+issueKey+" access");
    	        Reponse resp = new Reponse();
    	        resp.setNombre("Get Issue: "+issueKey);
    	        resp.setRegistros_status("SUCCESS");
@@ -124,32 +131,33 @@ public class AtlassianController {
       
       
     @PutMapping(
- 	        value = "/editIssue/{issueKey}",
+ 	        value = "/issue/{issueKey}",
  	        consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Reponse> editIssue(@RequestBody Issue issue, @PathVariable String issueKey) 
         {
-    	   LOGGER.trace(jiraHost+"editIssue/"+issueKey+" access");
+    	   LOGGER.trace(jiraHost+"issue/"+issueKey+" access");
   	       return atlassianService.editIssue(issue, issueKey);
  	    }
      
      
     @PostMapping(
-  	        value = "/addCommentByAdministrators/{issueKey}",
+  	        value = "/commentByAdministrators/{issueKey}",
   	        consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Reponse> addComment(@RequestBody Comment comment, @PathVariable String issueKey) 
          {
-    	   LOGGER.trace(jiraHost+"addCommentByAdministrators/"+issueKey+" access");
+    	   LOGGER.trace(jiraHost+"CommentByAdministrators/"+issueKey+" access");
    	       return atlassianService.addComment(comment,issueKey) ;
   	    	 
   	     }
      
      
      @GetMapping(
-   	        value = "/getComment/issueKey={issueKey}/commentId={commentId}",
+   	        value = "/comment",
    	        produces = MediaType.APPLICATION_JSON_VALUE)
-     public String getComment(@PathVariable String issueKey, @PathVariable String commentId ) 
+     public String getComment(@RequestParam String issueKey, @RequestParam  String commentId ) 
           {
-    	        LOGGER.trace(jiraHost+"/getComment/issueKey="+issueKey+"/commentId="+commentId+" access");
+    	 
+    	        LOGGER.trace(jiraHost+"/comment/issueKey="+issueKey+"/commentId="+commentId+" access");
     	        Reponse resp = new Reponse();
     	        resp.setNombre("Get Comment: "+commentId);
     	        resp.setRegistros_status("SUCCESS");
@@ -173,22 +181,22 @@ public class AtlassianController {
           
      
      @DeleteMapping(
-    	        value = "/deleteComment/issueKey={issueKey}/commentId={commentId}",
+    	        value = "/comment/issueKey={issueKey}/commentId={commentId}",
     	        produces = MediaType.APPLICATION_JSON_VALUE)
-     public ResponseEntity<Reponse> deleteComment(@PathVariable String issueKey, @PathVariable String commentId ) 
+     public ResponseEntity<Reponse> comment(@PathVariable String issueKey, @PathVariable String commentId ) 
            {
-	           LOGGER.trace(jiraHost+"/deleteComment/issueKey="+issueKey+"/commentId="+commentId+" access");
+	           LOGGER.trace(jiraHost+"/comment/issueKey="+issueKey+"/commentId="+commentId+" access");
      	       return atlassianService.deleteComment(issueKey, commentId);
     	        	
     	   }
       
      
      @GetMapping(
-    	        value = "/getEditIssueMeta/issueKey={issueKey}",
+    	        value = "/issueMeta",
     	        produces = MediaType.APPLICATION_JSON_VALUE)
-     public String GetEditIssueMeta(@PathVariable String issueKey ) 
+     public String GetEditIssueMeta(@RequestParam String issueKey ) 
            {
-    	           LOGGER.trace(jiraHost+"/getEditIssueMeta/issueKey="+issueKey+" access");
+    	           LOGGER.trace(jiraHost+"/issueMeta/issueKey="+issueKey+" access");
      	           Reponse resp = new Reponse();
      	           resp.setNombre("Get issue meta: "+issueKey);
      	           resp.setRegistros_status("SUCCESS");
@@ -212,11 +220,11 @@ public class AtlassianController {
       
         
     @GetMapping(
- 	        value = "/getRemoteIssueLink/issueKey={issueKey}",
+ 	        value = "/remoteIssueLink",
  	        produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getRemoteIssueLink(@PathVariable String issueKey ) 
+    public String getRemoteIssueLink(@RequestParam String issueKey) 
         {
-    	      LOGGER.trace(jiraHost+"/getRemoteIssueLink/issueKey="+issueKey+" access");
+    	      LOGGER.trace(jiraHost+"/remoteIssueLink/issueKey="+issueKey+" access");
   	          Reponse resp = new Reponse();
   	          resp.setNombre("Get remote issue link: "+issueKey);
   	          resp.setRegistros_status("SUCCESS");
@@ -239,11 +247,11 @@ public class AtlassianController {
  	     }
         
      @GetMapping(
-   	        value = "/getAllUsers",
+   	        value = "/allUsers",
    	        produces = MediaType.APPLICATION_JSON_VALUE)
      public String getAllUsers( ) 
           {
-	            LOGGER.trace(jiraHost+"/getAllUsers access");
+	            LOGGER.trace(jiraHost+"/allUsers access");
     	        Reponse resp = new Reponse();
     	        resp.setNombre("Get all users");
     	        resp.setRegistros_status("SUCCESS");
@@ -267,11 +275,11 @@ public class AtlassianController {
      
 
      @GetMapping(
-  	        value = "/getIssueComments/issueKey={issueKey}",
+  	        value = "/issueComments",
   	        produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getCommentOfIssue(@PathVariable String issueKey ) 
+    public String getCommentOfIssue(@RequestParam String issueKey ) 
          {
-    	      LOGGER.trace(jiraHost+"/getIssueComments/issueKey="+issueKey+" access");
+    	      LOGGER.trace(jiraHost+"/issueComments/issueKey="+issueKey+" access");
    	          Reponse resp = new Reponse();
    	          resp.setNombre("Get comment(s) of Issue: "+issueKey);
    	          resp.setRegistros_status("SUCCESS");
@@ -296,11 +304,11 @@ public class AtlassianController {
       
       
      @PostMapping(
-  	        value = "/getCommentList",
+  	        value = "/commentList",
   	        consumes = MediaType.APPLICATION_JSON_VALUE)
     public String getCommentList(@RequestBody CommenIdtList comment) 
          {
-    	    LOGGER.trace(jiraHost+"/getCommentList access");
+    	    LOGGER.trace(jiraHost+"/commentList access");
    	        return atlassianService.getCommentList(comment)	;	
   	        	  
   	      }
@@ -308,33 +316,33 @@ public class AtlassianController {
   	     
   	    
      @PostMapping(
-  	        value = "/addCustomField",
+  	        value = "/customField",
   	        consumes = MediaType.APPLICATION_JSON_VALUE)
      public ResponseEntity<Reponse> addCustomField(@RequestBody CustomField customField) 
          {
-    	    LOGGER.trace(jiraHost+"/addCustomField access");
+    	    LOGGER.trace(jiraHost+"/customField access");
    	        return atlassianService.addCustomField(customField);
   	        
   	     }
        
      
      @PutMapping(
-  	        value = "/updateComment/issueKey={issueKey}/commentId={commentId}",
+  	        value = "/comment/issueKey={issueKey}/commentId={commentId}",
   	        consumes = MediaType.APPLICATION_JSON_VALUE)
      public  ResponseEntity<Reponse> updateComment(@RequestBody UpdateComment updateComment, @PathVariable String issueKey, @PathVariable String commentId) 
          {
-           LOGGER.trace(jiraHost+"/updateComment/issueKey="+issueKey+"/commentId="+commentId+" access");
+           LOGGER.trace(jiraHost+"/comment/issueKey="+issueKey+"/commentId="+commentId+" access");
    	       return atlassianService.updateComment(updateComment, issueKey, commentId);
   	    	 
   	     }
      
      
     @GetMapping(
-   	        value = "/getCommentsByUserName/issueKey={issueKey}/userName={userName}",
+   	        value = "/commentsByUserName",
    	        produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserComments getUserComment(@PathVariable String issueKey, @PathVariable String userName) 
+    public UserComments getUserComment(@RequestParam String issueKey, @RequestParam String userName) 
           {
-              LOGGER.trace(jiraHost+"/getCommentsByUserName/issueKey="+issueKey+"/userName="+userName+" access");
+              LOGGER.trace(jiraHost+"/commentsByUserName/issueKey="+issueKey+"/userName="+userName+" access");
     	      Reponse resp = new Reponse();
     	      resp.setNombre("Get comment(s) of Issue: "+issueKey);
     	      resp.setRegistros_status("SUCCESS");
@@ -368,4 +376,127 @@ public class AtlassianController {
    	        	  
    	        }
    	     }
+    
+    
+    
+    @GetMapping(
+  	        value = "/allProject",
+  	        produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getProject()
+         {
+    	      ObjectMapper mapper = new ObjectMapper();
+    	      LOGGER.trace(jiraHost+"/allProject+ access");
+   	          Reponse resp = new Reponse();
+   	          resp.setNombre("Get all projects ");
+   	          resp.setRegistros_status("SUCCESS");
+   	          LOGGER.info("Trying to get all projects: ");
+   	        List<ProjectIndentifier> projectIndentifiers=new ArrayList<ProjectIndentifier>();
+	    	HttpHeaders headers = new HttpHeaders();
+  	        headers.setContentType(MediaType.APPLICATION_JSON);
+  	        HttpEntity<String> entity =new HttpEntity<String>(headers);
+  	        try {
+  	        	LOGGER.info("retrieving data from Jira");
+  	            String str= restTemplate.exchange(
+  	        		jiraUri+"/project/", HttpMethod.GET, entity, String.class, "id").getBody();
+  	            ProjectResponse[] pr = mapper.readValue(str, ProjectResponse[].class);
+  	            List< ProjectResponse> pr1 = Arrays.asList(mapper.readValue(str,  ProjectResponse[].class));
+  	     for(ProjectResponse p:pr1)
+  	    {
+  	    	ProjectIndentifier pi=new ProjectIndentifier();
+  	    	pi.setKey(p.getKey());
+  	    	pi.setName(p.getName());
+ 	    	projectIndentifiers.add(pi);
+  	    }
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(projectIndentifiers);
+        LOGGER.info("retrieving project indentifier and name from Jira successfully");
+  	   return json;
+  	            }
+  	        
+  	        catch(Exception e) {
+  	        		LOGGER.error("PROJECT(S) NOT FOUND");
+  	        		LOGGER.info("retrieving project indentifier and name from Jira unsuccessfully");
+  	            	resp.setRegistros_status("FAILED");
+  	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
+  	            	return "PROJECTS NOT FOUND";
+  	        	  
+  	        	}
+  	    }
+    
+    
+    @PostMapping(
+	        value = "/project",
+	        consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Reponse> createProject(@RequestBody ProjectModel projectModel) 
+       {
+	      LOGGER.trace(jiraHost+"project access");
+	      return  atlassianService.createProject(projectModel);
+			
+	     }
+ 
+    
+    @PostMapping(
+	        value = "/subTask",
+	        consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Reponse> createSubTask(@RequestBody SubTask subTask) 
+       {
+	      LOGGER.trace(jiraHost+"subTask access");
+	      return  atlassianService.createSubTask(subTask);
+			
+	     }
+ 
+    
+    
+    @PostMapping(
+	        value = "/story",
+	        consumes = MediaType.APPLICATION_JSON_VALUE)
+ public ResponseEntity<Reponse> createStory(@RequestBody Issue issue) 
+       {
+	      LOGGER.trace(jiraHost+"issue access");
+	      return  atlassianService.createIssue(issue);
+			
+	     }
+    
+    
+    @PostMapping(
+	        value = "/task",
+	        consumes = MediaType.APPLICATION_JSON_VALUE)
+ public ResponseEntity<Reponse> createTask(@RequestBody Issue issue) 
+       {
+	      LOGGER.trace(jiraHost+"issue access");
+	      return  atlassianService.createIssue(issue);
+			
+	     }
+
+    @GetMapping(
+   	        value = "/task",
+   	        produces = MediaType.APPLICATION_JSON_VALUE)
+     public String getAllTask(@RequestParam String projectKey ) 
+          {
+	            LOGGER.trace(jiraHost+"/task access");
+    	        Reponse resp = new Reponse();
+    	        resp.setNombre("Get all tasks");
+    	        resp.setRegistros_status("SUCCESS");
+    	        LOGGER.info("Trying to get all tasks of project:"+projectKey);
+   	    	HttpHeaders headers = new HttpHeaders();
+   	        headers.setContentType(MediaType.APPLICATION_JSON);
+   	        HttpEntity<String> entity =new HttpEntity<String>(headers);
+   	        try {
+   	        	LOGGER.info("retrieving data from Jira");
+   	        	System.out.println(jiraUri+"search/?jql=project="+projectKey +"AND issuetype = task");
+   	        return restTemplate.exchange(
+   	        		 jiraUri+"/search/?jql=project="+projectKey +" AND issuetype = task&maxResults=100", HttpMethod.GET, entity, String.class).getBody();
+   	            }
+   	        
+   	        catch(Exception e) {
+   	        		LOGGER.error("DATA NOT FOUND");
+   	            	resp.setRegistros_status("FAILED");
+   	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
+   	            	return "TASKS ARE NOT FOUND";
+   	        	}
+   	     }
+    
+    
+    
+    
+    
        }
