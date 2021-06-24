@@ -47,8 +47,6 @@ public class AtlassianService {
 		}  
 	
 	
-
-   
     public ResponseEntity<Reponse> createIssue(Issue issue) {
     	        Reponse resp = new Reponse();
     	        resp.setNombre("Created Issue");
@@ -62,16 +60,18 @@ public class AtlassianService {
    	        	LOGGER.info("pusing data into Jira");
    	        restTemplate.exchange(
    	        		jiraUri+"/issue", HttpMethod.POST, entity, Issue.class).getBody();
+   	      
    	            }
    	        
    	        catch(Exception e) {
-   	        		LOGGER.error("DATA NOT FOUND");
-   	            	resp.setRegistros_status("FAILED");
+   	        		LOGGER.error(e.getMessage());
+   	            	resp.setRegistros_status(e.getMessage());
    	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
    	            	return new ResponseEntity<Reponse>(resp, HttpStatus.BAD_REQUEST);
    	        	}
    	        LOGGER.info("created isuue successfully");
    	        return new ResponseEntity<Reponse>(resp, HttpStatus.CREATED);
+   	        
    	    }
 	
     
@@ -91,7 +91,7 @@ public class AtlassianService {
  	           }
  	        catch(Exception e) {
        		LOGGER.error("FAIL TO ASSIGN: "+assign.getName());
-           	resp.setRegistros_status("FAILED");
+           	resp.setRegistros_status(e.getMessage());
            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
            	return new ResponseEntity<Reponse>(resp, HttpStatus.BAD_REQUEST);
        	  }
@@ -116,8 +116,8 @@ public class AtlassianService {
 	            }
 	        
 	        catch(Exception e) {
-	        		LOGGER.error("DATA NOT FOUND");
-	            	resp.setRegistros_status("FAILED");
+	        		LOGGER.error("DATA DELETED FAILED");
+	            	resp.setRegistros_status(e.getMessage());
 	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
 	            	return new ResponseEntity<Reponse>(resp, HttpStatus.NOT_FOUND);
 	        	}
@@ -141,8 +141,8 @@ public class AtlassianService {
  	            }
  	        
  	        catch(Exception e) {
- 	        		LOGGER.error("DATA NOT FOUND");
- 	            	resp.setRegistros_status("FAILED");
+ 	        		LOGGER.error("FAILED TO EDIT ISSUE");
+ 	            	resp.setRegistros_status(e.getMessage());
  	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
  	            	return new ResponseEntity<Reponse>(resp, HttpStatus.FORBIDDEN);
  	        	  
@@ -169,7 +169,7 @@ public class AtlassianService {
        
        catch(Exception e) {
        		LOGGER.error("Fail to add comment");
-           	resp.setRegistros_status("FAILED");
+           	resp.setRegistros_status(e.getMessage());
            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
            	return new ResponseEntity<Reponse>(resp, HttpStatus.BAD_REQUEST);
        	  
@@ -195,7 +195,7 @@ public class AtlassianService {
        
        catch(Exception e) {
        		LOGGER.error("COMMENT NOT FOUND");
-           	resp.setRegistros_status("FAILED");
+           	resp.setRegistros_status(e.getMessage());
            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
            	//return "COMMENT: "+commentId+" NOT FOUND";
         	return new ResponseEntity<Reponse>(resp, HttpStatus.BAD_REQUEST);
@@ -220,8 +220,8 @@ public class AtlassianService {
            }
        
        catch(Exception e) {
-       		LOGGER.error("Fail to add comment");
-           	resp.setRegistros_status("FAILED");
+       		LOGGER.error("Fail to get comment list");
+           	resp.setRegistros_status(e.getMessage());
            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
            	return new ResponseEntity<Reponse>(resp, HttpStatus.NOT_FOUND).toString();
        
@@ -246,7 +246,7 @@ public class AtlassianService {
        
        catch(Exception e) {
        		LOGGER.error("Fail to add custom fileds");
-           	resp.setRegistros_status("FAILED");
+           	resp.setRegistros_status(e.getMessage());
            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
            	return new ResponseEntity<Reponse>(resp, HttpStatus.NOT_FOUND);
          }
@@ -270,8 +270,8 @@ public class AtlassianService {
            }
        
        catch(Exception e) {
-       		LOGGER.error("Fail to add custom fileds");
-           	resp.setRegistros_status("FAILED");
+       		LOGGER.error("Fail to add update comment");
+           	resp.setRegistros_status(e.getMessage());
            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
            	return new ResponseEntity<Reponse>(resp, HttpStatus.NOT_FOUND);
         }
@@ -298,7 +298,7 @@ public ResponseEntity<Reponse> updateIssue(Issue issue, String issueKey) {
     
     catch(Exception e) {
     		LOGGER.error("DATA NOT FOUND");
-        	resp.setRegistros_status("FAILED");
+        	resp.setRegistros_status(e.getMessage());
         	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
         	return new ResponseEntity<Reponse>(resp, HttpStatus.NOT_FOUND);
     	}
@@ -321,16 +321,16 @@ public ResponseEntity<Reponse> createProject(ProjectModel projectModel)  {
    HttpEntity<ProjectModel> entity =new HttpEntity<ProjectModel>(projectModel,headers);
    try {
    	LOGGER.info("pusing data into Jira");
-    restTemplate.exchange(
-   		jiraUri+"/project", HttpMethod.POST, entity, ProjectModel.class).getBody();
+       restTemplate.exchange(
+   		   jiraUri+"/project", HttpMethod.POST, entity, ProjectModel.class).getBody();
        
        }
    
    catch(Exception e) {
    		LOGGER.error("DATA PUSHED IN JIRA FAILED");
-   		LOGGER.error("Please check if insert project key or name duplicate ");
+   		LOGGER.error("Please check if insert project key or name duplicate/check do you have global permission to create project ");
    		
-       	resp.setRegistros_status("FAILED");
+       	resp.setRegistros_status(e.getMessage());
        	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
        	return new ResponseEntity<Reponse>(resp, HttpStatus.BAD_REQUEST);
    	}
@@ -361,7 +361,7 @@ public ResponseEntity<Reponse> createSubTask(SubTask subTask) {
 	   		LOGGER.error("DATA PUSHED IN JIRA FAILED");
 	   		LOGGER.error("Please check if inserted project key or parent key is invalid");
 	   		
-	       	resp.setRegistros_status("FAILED");
+	       	resp.setRegistros_status(e.getMessage());
 	       	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
 	       	return new ResponseEntity<Reponse>(resp, HttpStatus.BAD_REQUEST);
 	   	}

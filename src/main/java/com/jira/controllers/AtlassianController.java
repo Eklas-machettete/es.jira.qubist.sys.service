@@ -1,5 +1,6 @@
 package com.jira.controllers;
 import java.nio.charset.Charset;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +34,9 @@ import com.jira.model.subtask.SubTask;
 import com.jira.model.updateComment.UpdateComment;
 import com.jira.services.AtlassianService;
 
+
 @RestController
-@RequestMapping("/response")
+@RequestMapping("/jira/v1.0")
 public class AtlassianController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(AtlassianController.class);
@@ -123,9 +125,9 @@ public class AtlassianController {
   	        
   	        catch(Exception e) {
   	        		LOGGER.error("DATA NOT FOUND");
-  	            	resp.setRegistros_status("FAILED");
+  	            	resp.setRegistros_status(e.getMessage());
   	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
-  	            	return "ISSUE: "+issueKey+" NOT FOUND";
+  	            	return "[ISSUE: "+issueKey+" NOT FOUND.] "+e.getMessage();
   	         }
   	     }
       
@@ -173,9 +175,9 @@ public class AtlassianController {
    	        
    	        catch(Exception e) {
    	        		LOGGER.error("COMMENT NOT FOUND");
-   	            	resp.setRegistros_status("FAILED");
+   	            	resp.setRegistros_status(e.getMessage());
    	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
-   	            	return "COMMENT: "+commentId+" NOT FOUND";
+   	            	return "[COMMENT: "+commentId+" NOT FOUND.] "+e.getMessage();
    	        	}
    	     }
           
@@ -212,9 +214,9 @@ public class AtlassianController {
     	        
     	        catch(Exception e) {
     	        		LOGGER.error("ISSUE META NOT FOUND");
-    	            	resp.setRegistros_status("FAILED");
+    	            	resp.setRegistros_status(e.getMessage());
     	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
-    	            	return "ISSUE: "+issueKey+" NOT FOUND";
+    	            	return "[ISSUE: "+issueKey+" NOT FOUND.] "+e.getMessage();
     	        	}
     	     }
       
@@ -240,9 +242,9 @@ public class AtlassianController {
  	        
  	        catch(Exception e) {
  	        		LOGGER.error("ISSUE NOT FOUND");
- 	            	resp.setRegistros_status("FAILED");
+ 	            	resp.setRegistros_status(e.getMessage());
  	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
- 	            	return "ISSUE: "+issueKey+" NOT FOUND";
+ 	            	return "[ISSUE: "+issueKey+" NOT FOUND.] "+e.getMessage();
  	        	}
  	     }
         
@@ -251,7 +253,7 @@ public class AtlassianController {
    	        produces = MediaType.APPLICATION_JSON_VALUE)
      public String getAllUsers( ) 
           {
-	            LOGGER.trace(jiraHost+"/allUsers access");
+	            LOGGER.trace(jiraHost+"allUsers access");
     	        Reponse resp = new Reponse();
     	        resp.setNombre("Get all users");
     	        resp.setRegistros_status("SUCCESS");
@@ -267,9 +269,9 @@ public class AtlassianController {
    	        
    	        catch(Exception e) {
    	        		LOGGER.error("DATA NOT FOUND");
-   	            	resp.setRegistros_status("FAILED");
+   	            	resp.setRegistros_status(e.getMessage());
    	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
-   	            	return "USERS NOT FOUND";
+   	            	return "[USERS NOT FOUND.] "+e.getMessage();
    	        	}
    	     }
      
@@ -295,10 +297,10 @@ public class AtlassianController {
   	        
   	        catch(Exception e) {
   	        		LOGGER.error("COMMENT(S) NOT FOUND");
-  	            	resp.setRegistros_status("FAILED");
+  	            	resp.setRegistros_status(e.getMessage());
   	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
-  	            	return "COMMENT IF ISSUE: "+issueKey+" NOT FOUND";
-  	        	  
+  	            	return "[COMMENT IF ISSUE: "+issueKey+" NOT FOUND.] "+e.getMessage();
+  	        	 
   	        	}
   	    }
       
@@ -369,7 +371,7 @@ public class AtlassianController {
    	        
    	        catch(Exception e) {
    	        		LOGGER.error("COMMENT(S) NOT FOUND");
-   	            	resp.setRegistros_status("FAILED");
+   	            	resp.setRegistros_status(e.getMessage());
    	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
    	            	//return "COMMENT IF ISSUE: "+issueKey+" NOT FOUND";
    	            	return userComments;
@@ -385,7 +387,7 @@ public class AtlassianController {
     public String getProject()
          {
     	      ObjectMapper mapper = new ObjectMapper();
-    	      LOGGER.trace(jiraHost+"/allProject+ access");
+    	      LOGGER.trace(jiraHost+"/allProject access");
    	          Reponse resp = new Reponse();
    	          resp.setNombre("Get all projects ");
    	          resp.setRegistros_status("SUCCESS");
@@ -415,9 +417,9 @@ public class AtlassianController {
   	        catch(Exception e) {
   	        		LOGGER.error("PROJECT(S) NOT FOUND");
   	        		LOGGER.info("retrieving project indentifier and name from Jira unsuccessfully");
-  	            	resp.setRegistros_status("FAILED");
+  	            	resp.setRegistros_status(e.getMessage());
   	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
-  	            	return "PROJECTS NOT FOUND";
+  	            	return e.getMessage();
   	        	  
   	        	}
   	    }
@@ -489,7 +491,7 @@ public class AtlassianController {
    	        
    	        catch(Exception e) {
    	        		LOGGER.error("DATA NOT FOUND");
-   	            	resp.setRegistros_status("FAILED");
+   	            	resp.setRegistros_status(e.getMessage());
    	            	resp.setRegistros_fallidos(resp.getRegistros_fallidos()+1);
    	            	return "TASKS ARE NOT FOUND";
    	        	}
